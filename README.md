@@ -29,20 +29,20 @@ To add the data to the MongoDB instance please follow the instructions on this b
 
 Now, ssh into the application.
 
-Add the data to a collection called parkpoints:
+Add the data to a collection called postpoints:
 
-    mongoimport -d pythonws -c parkpoints --type json --file $OPENSHIFT_REPO_DIR/parkcoord.json  -h $OPENSHIFT_MONGODB_DB_HOST  -u admin -p $OPENSHIFT_MONGODB_DB_PASSWORD
+    mongoimport -d pythonws -c postpoints --type json --file $OPENSHIFT_REPO_DIR/postcoord.json  -h $OPENSHIFT_MONGODB_DB_HOST  -u admin -p $OPENSHIFT_MONGODB_DB_PASSWORD
 
     
 Create the spatial index on the documents:
 
     mongo
     use pythonws
-    db.parkpoints.ensureIndex( { pos : "2d" } );
+    db.postpoints.ensureIndex( { pos : "2d" } );
 
 Once the data is imported you can now checkout your application at:
 
-    http://pythonws-$yournamespace.rhcloud.com/ws/parks
+    http://pythonws-$yournamespace.rhcloud.com/ws/posts
  
 License
 -------

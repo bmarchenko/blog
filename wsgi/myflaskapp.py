@@ -11,36 +11,36 @@ app = Flask(__name__)
 #add this so that flask doesn't swallow error messages
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
-#a base urls that returns all the parks in the collection (of course in the future we would implement paging)
-@app.route("/ws/parks")
-def parks():
+#a base urls that returns all the posts in the collection (of course in the future we would implement paging)
+@app.route("/ws/posts")
+def posts():
     #setup the connection
     conn = pymongo.Connection(os.environ['OPENSHIFT_MONGODB_DB_URL'])
     db = conn[os.environ['OPENSHIFT_APP_NAME']]
 
-    #query the DB for all the parkpoints
-    result = db.parkpoints.find()
+    #query the DB for all the postpoints
+    result = db.postpoints.find()
 
     #Now turn the results into valid JSON
     return str(json.dumps({'results':list(result)},default=json_util.default))
 
 
-#return a specific park given it's mongo _id
-@app.route("/ws/parks/park/<parkId>")
-def onePark(parkId):
+#return a specific post given it's mongo _id
+@app.route("/ws/posts/post/<postId>")
+def onepost(postId):
     #setup the connection
     conn = pymongo.Connection(os.environ['OPENSHIFT_MONGODB_DB_URL'])
     db = conn[os.environ['OPENSHIFT_APP_NAME']]
 
     #query based on the objectid
-    result = db.parkpoints.find({'_id': objectid.ObjectId(parkId)})
+    result = db.postpoints.find({'_id': objectid.ObjectId(postId)})
 
     #turn the results into valid JSON
     return str(json.dumps({'results' : list(result)},default=json_util.default))
 
 
-#find parks near a lat and long passed in as query parameters (near?lat=45.5&lon=-82)
-@app.route("/ws/parks/near")
+#find posts near a lat and long passed in as query parameters (near?lat=45.5&lon=-82)
+@app.route("/ws/posts/near")
 def near():
     #setup the connection
     conn = pymongo.Connection(os.environ['OPENSHIFT_MONGODB_DB_URL'])
@@ -51,14 +51,14 @@ def near():
     lon = float(request.args.get('lon'))
 
     #use the request parameters in the query
-    result = db.parkpoints.find({"pos" : { "$near" : [lon,lat]}})
+    result = db.postpoints.find({"pos" : { "$near" : [lon,lat]}})
 
     #turn the results into valid JSON
     return str(json.dumps({'results' : list(result)},default=json_util.default))
 
 
-#find parks with a certain name (use regex) near a lat long pair such as above
-@app.route("/ws/parks/name/near/<name>")
+#find posts with a certain name (use regex) near a lat long pair such as above
+@app.route("/ws/posts/name/near/<name>")
 def nameNear(name):
     #setup the connection
     conn = pymongo.Connection(os.environ['OPENSHIFT_MONGODB_DB_URL'])
@@ -72,7 +72,7 @@ def nameNear(name):
     myregex = re.compile(name, re.I)
 
     #use the request parameters in the query along with the regex
-    result = db.parkpoints.find({"Name" : myregex, "pos" : { "$near" : [lon,lat]}})
+    result = db.postpoints.find({"Name" : myregex, "pos" : { "$near" : [lon,lat]}})
 
     #turn the results into valid JSON
     return str(json.dumps({'results' : list(result)},default=json_util.default))
